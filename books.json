@@ -1,0 +1,152 @@
+{
+  "library": {
+    "name": "My Student Library",
+    "total": 16,
+    "books": [
+      {
+        "id": 1,
+        "title": "Let Us C",
+        "author": "Yashavant Kanetkar",
+        "genre": "Programming",
+        "year": 1999,
+        "pages": 675,
+        "available": true
+      },
+      {
+        "id": 2,
+        "title": "the goat life",
+        "author": "Bjarne Stroustrup",
+        "genre": "Programming",
+        "year": 1985,
+        "pages": 1366,
+        "available": true
+      },
+      {
+        "id": 3,
+        "title": "Introduction to Algorithms",
+        "author": "Thomas H. Cormen",
+        "genre": "Computer Science",
+        "year": 1990,
+        "pages": 1292,
+        "available": false
+      },
+      {
+        "id": 4,
+        "title": "Clean Code",
+        "author": "Robert C. Martin",
+        "genre": "Software Engineering",
+        "year": 2008,
+        "pages": 431,
+        "available": true
+      },
+      {
+        "id": 5,
+        "title": "You Don't Know JS",
+        "author": "Kyle Simpson",
+        "genre": "Programming",
+        "year": 2015,
+        "pages": 278,
+        "available": true
+      },
+      {
+        "id": 6,
+        "title": "Python Crash Course",
+        "author": "Eric Matthes",
+        "genre": "Programming",
+        "year": 2015,
+        "pages": 544,
+        "available": false
+      },
+      {
+        "id": 7,
+        "title": "Design Patterns",
+        "author": "Gang of Four (GoF)",
+        "genre": "Software Engineering",
+        "year": 1994,
+        "pages": 395,
+        "available": true
+      },
+      {
+        "id": 8,
+        "title": "The Pragmatic Programmer",
+        "author": "Andrew Hunt",
+        "genre": "Software Engineering",
+        "year": 1999,
+        "pages": 352,
+        "available": true
+      },
+      {
+        "id": 9,
+        "title": "Operating System Concepts",
+        "author": "Abraham Silberschatz",
+        "genre": "Computer Science",
+        "year": 1983,
+        "pages": 976,
+        "available": false
+      },
+      {
+        "id": 10,
+        "title": "Database System Concepts",
+        "author": "Sudarshan & Korth",
+        "genre": "Database",
+        "year": 1997,
+        "pages": 1376,
+        "available": true
+      },
+      {
+        "id": 11,
+        "title": "Computer Networks",
+        "author": "Andrew S. Tanenbaum",
+        "genre": "Networking",
+        "year": 1981,
+        "pages": 962,
+        "available": true
+      },
+      {
+        "id": 12,
+        "title": "Eloquent JavaScript",
+        "author": "Marijn Haverbeke",
+        "genre": "Programming",
+        "year": 2011,
+        "pages": 472,
+        "available": true
+      },
+      {
+        "id": 13,
+        "title": "Artificial Intelligence: A Modern Approach",
+        "author": "Stuart Russell & Peter Norvig",
+        "genre": "AI / ML",
+        "year": 1995,
+        "pages": 1152,
+        "available": false
+      },
+      {
+        "id": 14,
+        "title": "Deep Learning",
+        "author": "Ian Goodfellow",
+        "genre": "AI / ML",
+        "year": 2016,
+        "pages": 800,
+        "available": true
+      },
+      {
+        "id": 15,
+        "title": "The Web Application Hacker's Handbook",
+        "author": "Dafydd Stuttard",
+        "genre": "Cybersecurity",
+        "year": 2007,
+        "pages": 770,
+        "available": true
+      },
+      {
+        "id": 16,
+        "title": "Structure and Interpretation of Computer Programs",
+        "author": "Harold Abelson",
+        "genre": "Computer Science",
+        "year": 1984,
+        "pages": 657,
+        "available": false
+      }
+    ]
+  }
+}

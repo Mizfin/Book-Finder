@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📚 My Library – Student Project</title>
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #eef2ff;
+            min-height: 100vh;
+            padding: 24px 16px;
+        }
+
+        /* ── Notebook wrapper ── */
+        .notebook {
+            max-width: 980px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 5px 8px 24px rgba(0,0,0,0.13);
+            overflow: hidden;
+            border-left: 7px solid #e63946;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #3a86ff, #6a5acd);
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .header .holes { display: flex; gap: 12px; }
+        .header .holes span {
+            width: 18px; height: 18px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .header h1 { color: #fff; font-size: 1.5rem; font-weight: 700; flex: 1; }
+        .header .badge {
+            background: #ffbe0b; color: #333;
+            font-size: 0.72rem; font-weight: 700;
+            padding: 5px 12px; border-radius: 20px;
+        }
+
+        /* ── Student info bar ── */
+        .info-bar {
+            background: #fffde7;
+            border-bottom: 2px dashed #ffd54f;
+            padding: 10px 28px;
+            font-size: 0.78rem;
+            color: #555;
+            display: flex;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+        .info-bar span strong { color: #222; }
+
+        /* ── Lined paper content area ── */
+        .content {
+            padding: 28px 32px;
+            background-image: repeating-linear-gradient(
+                transparent, transparent 27px, #dce8ff 28px
+            );
+            background-size: 100% 28px;
+        }
+
+        /* ── Toolbar: search + filter ── */
+        .toolbar {
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #3a86ff;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+        }
+        .toolbar label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #3a86ff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .toolbar-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        #searchInput {
+            flex: 1;
+            min-width: 180px;
+            padding: 10px 14px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        #searchInput:focus { border-color: #3a86ff; }
+
+        #genreFilter {
+            padding: 10px 14px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        #genreFilter:focus { border-color: #6a5acd; }
+
+        #loadBtn {
+            padding: 10px 24px;
+            background: #3a86ff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: background 0.25s, transform 0.15s;
+        }
+        #loadBtn:hover  { background: #2563eb; }
+        #loadBtn:active { transform: scale(0.97); }
+
+        /* ── Loader ── */
+        #loader {
+            text-align: center;
+            padding: 20px;
+            display: none;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        .spinner {
+            display: inline-block;
+            width: 24px; height: 24px;
+            border: 4px solid #d0e4ff;
+            border-top-color: #3a86ff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Error box ── */
+        #errorBox {
+            background: #fdecea;
+            border: 2px dashed #e63946;
+            color: #c0392b;
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-bottom: 18px;
+            display: none;
+            font-size: 0.88rem;
+        }
+
+        /* ── JSON preview box (collapsible) ── */
+        .json-preview-wrap {
+            margin-bottom: 22px;
+        }
+        .json-toggle-btn {
+            background: #6a5acd;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        .json-toggle-btn:hover { background: #5141b5; }
+        #jsonPreview {
+            background: #1e1e2e;
+            color: #a6e3a1;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 0.72rem;
+            font-family: 'Courier New', monospace;
+            max-height: 220px;
+            overflow-y: auto;
+            display: none;
+            white-space: pre;
+            line-height: 1.6;
+        }
+
+        /* ── Stats row ── */
+        .stats-row {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+        .stat-chip {
+            background: rgba(255,255,255,0.85);
+            border: 2px solid #e0eaff;
+            border-radius: 30px;
+            padding: 6px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stat-chip .dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* ── Results header ── */
+        .results-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 8px;
+            padding: 10px 18px;
+        }
+        .results-header h2 { font-size: 1rem; color: #222; font-weight: 700; }
+        .count-badge {
+            background: #3a86ff;
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+
+        /* ── Book cards grid ── */
+        #booksGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+            gap: 18px;
+        }
+
+        .book-card {
+            background: #fff;
+            border: 2px solid #e0eaff;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.25s, box-shadow 0.25s;
+            animation: fadeUp 0.35s ease both;
+            position: relative;
+        }
+        .book-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 26px rgba(58,134,255,0.18);
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Coloured spine strip */
+        .card-stripe { height: 7px; }
+
+        .card-body { padding: 15px 18px 18px; }
+
+        .card-num {
+            position: absolute;
+            top: 14px; right: 14px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #3a86ff;
+            background: #eef2ff;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .book-emoji { font-size: 2rem; margin-bottom: 6px; }
+
+        .book-title {
+            font-size: 0.93rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+            line-height: 1.4;
+            padding-right: 36px;  /* avoid overlap with badge */
+        }
+
+        .book-author {
+            font-size: 0.8rem;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .book-author::before { content: '✍️ '; }
+
+        .book-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .meta-tag {
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 12px;
+            border: 1.5px solid;
+        }
+
+        .avail-yes { background: #e8fdf2; color: #16a34a; border-color: #86efac; }
+        .avail-no  { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+
+        /* ── Empty state ── */
+        #emptyState {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+            color: #aaa;
+        }
+        #emptyState .big { font-size: 3.5rem; }
+
+        /* ── Footer ── */
+        .footer {
+            background: #f8f9fc;
+            border-top: 2px dashed #d0e4ff;
+            padding: 14px 28px;
+            font-size: 0.72rem;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        @media (max-width: 540px) {
+            .content { padding: 18px 14px; }
+            #booksGrid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.15rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="notebook">
+
+    <!-- ── Header ── -->
+    <div class="header">
+        <div class="holes">
+            <span></span><span></span><span></span>
+        </div>
+        <h1>📚 My Student Library</h1>
+        <span class="badge">Student Project</span>
+    </div>
+
+    <!-- ── Student info strip ── -->
+    <div class="info-bar">
+        <span><strong>Subject:</strong> Web Technology Lab</span>
+        <span><strong>Topic:</strong> jQuery &amp; AJAX – Fetching Own JSON File</span>
+        <span><strong>JSON Source:</strong> books.json (local file)</span>
+        <span><strong>Date:</strong> <span id="todayDate"></span></span>
+    </div>
+
+    <!-- ── Main content (lined paper) ── -->
+    <div class="content">
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <label>🔍 Search &amp; Filter Books</label>
+            <div class="toolbar-row">
+                <input type="text" id="searchInput" placeholder="Search title or author…" autocomplete="off" />
+                <select id="genreFilter">
+                    <option value="">All Genres</option>
+                </select>
+                <button id="loadBtn">⟳ Load / Reload JSON</button>
+            </div>
+        </div>
+
+        <!-- Loader -->
+        <div id="loader">
+            <span class="spinner"></span>
+            Fetching <strong>books.json</strong> via AJAX…
+        </div>
+
+        <!-- Error -->
+        <div id="errorBox">
+            ⚠️ <strong>Error:</strong> <span id="errorText"></span>
+        </div>
+
+        <!-- JSON Raw Preview (toggle) -->
+        <div class="json-preview-wrap">
+            <button class="json-toggle-btn" id="jsonToggle">{ } View Raw JSON Response</button>
+            <pre id="jsonPreview"></pre>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stats-row" id="statsRow" style="display:none;">
+            <div class="stat-chip">
+                📚 Total: <strong id="statTotal">0</strong>
+            </div>
+            <div class="stat-chip">
+                <span class="dot" style="background:#16a34a;"></span>
+                Available: <strong id="statAvail">0</strong>
+            </div>
+            <div class="stat-chip">
+                <span class="dot" style="background:#dc2626;"></span>
+                Issued: <strong id="statIssued">0</strong>
+            </div>
+        </div>
+
+        <!-- Results header -->
+        <div class="results-header" id="resultsHeader">
+            <h2>📖 Book List</h2>
+            <span class="count-badge" id="countBadge">0 books</span>
+        </div>
+
+        <!-- Books Grid -->
+        <div id="booksGrid"></div>
+
+        <!-- Empty state -->
+        <div id="emptyState">
+            <div class="big">🕵️</div>
+            <p style="margin-top:10px;">No books match your search.</p>
+        </div>
+
+    </div><!-- /content -->
+
+    <!-- Footer -->
+    <div class="footer">
+        <span>📄 Data Source: <strong>books.json</strong> (own local JSON file)</span>
+        <span>Fetched with jQuery <code>$.ajax()</code> &nbsp;|&nbsp; No external API used ✅</span>
+    </div>
+
+</div><!-- /notebook -->
+
+
+<!-- ===================================================
+     JQUERY + AJAX SCRIPT
+=================================================== -->
+<script>
+$(document).ready(function () {
+
+    /* ── Today's date ── */
+    $('#todayDate').text(new Date().toLocaleDateString('en-IN', {
+        day: '2-digit', month: 'long', year: 'numeric'
+    }));
+
+    /* ── Data storage ── */
+    let allBooks  = [];   // full list from JSON
+    let shown     = [];   // currently filtered list
+
+    /* ── Visual helpers ── */
+    const stripeColors = [
+        '#3a86ff','#ff006e','#fb5607','#ffbe0b',
+        '#8338ec','#06d6a0','#ef476f','#118ab2'
+    ];
+    const emojis = ['📗','📘','📙','📕','📔','📒','📓','📚'];
+
+    /* =========================================================
+       FUNCTION: fetchBooksJSON()
+       Uses $.ajax() to load our own books.json file,
+       parses the JSON response, and feeds data to the page.
+    ========================================================= */
+    function fetchBooksJSON() {
+
+        /* -- Reset UI -- */
+        $('#loader').show();
+        $('#errorBox').hide();
+        $('#booksGrid').empty();
+        $('#emptyState').hide();
+        $('#resultsHeader').hide();
+        $('#statsRow').hide();
+        allBooks = [];
+
+        /* ---- AJAX CALL: fetch own JSON file ---- */
+        $.ajax({
+            url     : 'books.json',       // ← Our own JSON file
+            method  : 'GET',
+            dataType: 'json',             // jQuery will auto-parse JSON
+
+            /* ---- SUCCESS: JSON loaded and parsed ---- */
+            success: function (data) {
+                $('#loader').hide();
+
+                /* 1. Show raw JSON in preview panel */
+                $('#jsonPreview').text(JSON.stringify(data, null, 2));
+
+                /* 2. Navigate into the JSON structure */
+                const library = data.library;
+                allBooks = library.books;    // array of book objects
+
+                /* 3. Populate genre dropdown dynamically */
+                populateGenres(allBooks);
+
+                /* 4. Show stats */
+                updateStats(allBooks);
+
+                /* 5. Render cards */
+                renderBooks(allBooks);
+            },
+
+            /* ---- ERROR: file not found or server error ---- */
+            error: function (xhr, status, err) {
+                $('#loader').hide();
+                $('#errorText').text(
+                    'Could not load books.json. '
+                    + 'Make sure you are running a local server. '
+                    + '[ Status: ' + status + ' | ' + err + ' ]'
+                );
+                $('#errorBox').show();
+            }
+        });
+        /* ---- end $.ajax ---- */
+    }
+
+    /* =========================================================
+       FUNCTION: populateGenres(books)
+       Reads unique genres from JSON and fills the <select>
+    ========================================================= */
+    function populateGenres(books) {
+        const genres = [...new Set(books.map(b => b.genre))].sort();
+        $('#genreFilter').find('option:not(:first)').remove();
+        $.each(genres, function (i, g) {
+            $('#genreFilter').append($('<option>').val(g).text(g));
+        });
+    }
+
+    /* =========================================================
+       FUNCTION: updateStats(books)
+       Counts totals / available / issued
+    ========================================================= */
+    function updateStats(books) {
+        const avail  = books.filter(b => b.available).length;
+        const issued = books.length - avail;
+        $('#statTotal').text(books.length);
+        $('#statAvail').text(avail);
+        $('#statIssued').text(issued);
+        $('#statsRow').show();
+    }
+
+    /* =========================================================
+       FUNCTION: renderBooks(books)
+       Clears the grid and dynamically appends book cards
+       showing Title, Author, Genre, Year, Pages, Availability
+    ========================================================= */
+    function renderBooks(books) {
+        $('#booksGrid').empty();
+        $('#emptyState').hide();
+
+        if (books.length === 0) {
+            $('#emptyState').show();
+            $('#resultsHeader').hide();
+            return;
+        }
+
+        /* Update count badge */
+        $('#countBadge').text(books.length + ' book' + (books.length !== 1 ? 's' : ''));
+        $('#resultsHeader').css('display', 'flex');
+
+        /* Build and append each card */
+        $.each(books, function (index, book) {
+
+            const color   = stripeColors[index % stripeColors.length];
+            const emoji   = emojis[index % emojis.length];
+            const availClass = book.available ? 'avail-yes' : 'avail-no';
+            const availText  = book.available ? '✅ Available' : '❌ Issued';
+
+            /* jQuery card construction */
+            const $card = $('<div>').addClass('book-card');
+
+            $card.html(`
+                <div class="card-stripe" style="background:${color};"></div>
+                <div class="card-body">
+                    <span class="card-num">#${book.id}</span>
+                    <div class="book-emoji">${emoji}</div>
+                    <div class="book-title">${escHtml(book.title)}</div>
+                    <div class="book-author">${escHtml(book.author)}</div>
+                    <div class="book-meta">
+                        <span class="meta-tag" style="background:#eef2ff;color:#3a86ff;border-color:#bfdbfe;">
+                            📂 ${escHtml(book.genre)}
+                        </span>
+                        <span class="meta-tag" style="background:#fdf4ff;color:#7c3aed;border-color:#d8b4fe;">
+                            📅 ${book.year}
+                        </span>
+                        <span class="meta-tag" style="background:#fafafa;color:#555;border-color:#ddd;">
+                            📄 ${book.pages} pages
+                        </span>
+                        <span class="meta-tag ${availClass}">
+                            ${availText}
+                        </span>
+                    </div>
+                </div>
+            `);
+
+            /* Staggered animation delay */
+            $card.css('animation-delay', (index * 55) + 'ms');
+
+            $('#booksGrid').append($card);
+        });
+    }
+
+    /* =========================================================
+       FUNCTION: filterBooks()
+       Filters allBooks by search text AND selected genre
+    ========================================================= */
+    function filterBooks() {
+        const query = $('#searchInput').val().trim().toLowerCase();
+        const genre = $('#genreFilter').val();
+
+        shown = allBooks.filter(function (book) {
+            const matchText = !query
+                || book.title.toLowerCase().includes(query)
+                || book.author.toLowerCase().includes(query);
+            const matchGenre = !genre || book.genre === genre;
+            return matchText && matchGenre;
+        });
+
+        updateStats(shown);
+        renderBooks(shown);
+    }
+
+    /* ── Helper: escape HTML to prevent XSS ── */
+    function escHtml(str) {
+        return $('<div>').text(str).html();
+    }
+
+    /* =========================================================
+       EVENT BINDINGS
+    ========================================================= */
+
+    /* Load / Reload button → AJAX call */
+    $('#loadBtn').on('click', function () {
+        fetchBooksJSON();
+    });
+
+    /* Search input (live filter) */
+    $('#searchInput').on('input', function () {
+        if (allBooks.length) filterBooks();
+    });
+
+    /* Genre dropdown */
+    $('#genreFilter').on('change', function () {
+        if (allBooks.length) filterBooks();
+    });
+
+    /* JSON preview toggle */
+    $('#jsonToggle').on('click', function () {
+        $('#jsonPreview').slideToggle(250);
+        const open = $('#jsonPreview').is(':visible');
+        $(this).text(open ? '{ } Hide Raw JSON' : '{ } View Raw JSON Response');
+    });
+
+    /* ── Auto-load on page start ── */
+    fetchBooksJSON();
+
+}); // end document.ready
+</script>
+
+</body>
+</html>
